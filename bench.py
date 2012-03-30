@@ -8,8 +8,7 @@ def start():
 
 
 def stop(start):
-    end = time() - start
-    print "Finished after %s ms" % (end * 1000)
+    return time() - start
 
 
 def bench(name, num, callback, correct):
@@ -17,21 +16,26 @@ def bench(name, num, callback, correct):
     print "Starting algorithm %s for %s!" % (name, num)
     print "========================================================"
 
-    s = start()
-    attempt = newbie(num)
-    stop(s)
-    try:
-        assert attempt == correct
-        print "SUCCESS"
-    except:
-        print "INCORRECT"
+    def round():
+        s = start()
+        newbie(num)
+        return stop(s)
+
+    rounds = 20
+    time = 0
+    for i in range(rounds):
+        time += round()
+
+    avg = time / rounds
+    print "Did it in %s ms averaged over %s rounds." % (avg * 1000, rounds)
     print "========================================================\n"
+    return avg
 
 if __name__ == '__main__':
     try:
         r = sys.argv[1]
     except IndexError:
-        r = 25000
+        r = 5000
 
     sys.setrecursionlimit(r * 2)
 
